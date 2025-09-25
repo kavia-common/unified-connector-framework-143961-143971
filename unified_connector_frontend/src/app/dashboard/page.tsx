@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 
 // Reuse existing fetcher style from lib/api where possible
+import { getApiBaseUrl } from "../../lib/api/client";
+
 const fetcher = async (url: string) => {
   const res = await fetch(url, { credentials: "include" });
   if (!res.ok) {
@@ -222,7 +224,8 @@ export default function DashboardPage() {
    */
   const [validatingId, setValidatingId] = useState<string | null>(null);
   const [revokingId, setRevokingId] = useState<string | null>(null);
-  const { data: connectors, error: connectorsError } = useSWR<ConnectorInfo[]>("/api/connectors", fetcher, {
+  const apiBase = getApiBaseUrl();
+  const { data: connectors, error: connectorsError } = useSWR<ConnectorInfo[]>(`${apiBase}/connectors`, fetcher, {
     revalidateOnFocus: true,
     revalidateOnReconnect: true,
   });
@@ -230,7 +233,7 @@ export default function DashboardPage() {
     data: connections,
     isLoading,
     error: connectionsError,
-  } = useSWR<Connection[]>("/api/connections", fetcher, {
+  } = useSWR<Connection[]>(`${apiBase}/connections`, fetcher, {
     revalidateOnFocus: true,
     revalidateOnReconnect: true,
     refreshInterval: 15000, // gentle polling for freshness
@@ -246,7 +249,7 @@ export default function DashboardPage() {
   const onValidate = useCallback(async (id: string) => {
     try {
       setValidatingId(id);
-      const res = await fetch(`/api/connections/${encodeURIComponent(id)}/validate`, {
+      const res = await fetch(`${apiBase}/connections/${encodeURIComponent(id)}/validate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -256,20 +259,20 @@ export default function DashboardPage() {
         throw new Error(t || `Failed to validate connection ${id}`);
       }
       // Optimistically revalidate list
-      await mutate("/api/connections");
+      await mutate(`${apiBase}/connections`);
     } catch (e) {
       console.error(e);
       alert((e as Error).message || "Validation failed");
     } finally {
       setValidatingId(null);
     }
-  }, []);
+  }, [apiBase]);
 
   const onRevoke = useCallback(async (id: string) => {
     if (!confirm("Are you sure you want to revoke this connection?")) return;
     try {
       setRevokingId(id);
-      const res = await fetch(`/api/connections/${encodeURIComponent(id)}/revoke`, {
+      const res = await fetch(`${apiBase}/connections/${encodeURIComponent(id)}/revoke`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -278,14 +281,14 @@ export default function DashboardPage() {
         const t = await res.text().catch(() => "");
         throw new Error(t || `Failed to revoke connection ${id}`);
       }
-      await mutate("/api/connections");
+      await mutate(`${apiBase}/connections`);
     } catch (e) {
       console.error(e);
       alert((e as Error).message || "Revoke failed");
     } finally {
       setRevokingId(null);
     }
-  }, []);
+  }, [apiBase]);
 
   return (
     <main className="min-h-screen"

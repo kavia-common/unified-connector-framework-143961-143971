@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Unified Connector Frontend (Next.js)
 
-## Getting Started
+Modern Next.js app for the Unified Connector Framework. It provides:
+- Connection onboarding wizard (/wizard)
+- Connections dashboard (/dashboard)
+- Connection detail explorer (/connections/[id])
 
-First, run the development server:
+The app uses Tailwind CSS styles and communicates directly with the FastAPI backend via public environment variables (NEXT_PUBLIC_*).
 
-```bash
+## Prerequisites
+
+- Node.js LTS (18+) and npm
+- Running backend (FastAPI) for API interactions
+
+## Environment Configuration
+
+Set the backend base URL using a public Next.js variable so it is available on the client:
+- NEXT_PUBLIC_API_BASE_URL
+
+For local development, copy .env.example to .env.local and set:
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+
+Ensure the backend enables CORS for your frontend origin (e.g., http://localhost:3000) during local development.
+
+## Install
+
+npm install
+
+## Run (dev)
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Open http://localhost:3000
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Build
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+npm run build
+npm run start
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Note: This app is configured for static export in next.config.ts. If you deploy behind a static host, all API requests still call the backend via NEXT_PUBLIC_API_BASE_URL.
 
-## Learn More
+## API Integration Details
 
-To learn more about Next.js, take a look at the following resources:
+- All API calls are made directly to the backend using NEXT_PUBLIC_API_BASE_URL (no Next.js API routes are used).
+- Shared API helpers live in src/lib/api/client.ts:
+  - getApiBaseUrl(): reads NEXT_PUBLIC_API_BASE_URL
+  - jsonFetch(): attaches JSON headers and credentials
+  - parseUnifiedEnvelope(): normalizes UnifiedEnvelope response
+  - fetchEnvelope(): convenience wrapper for the above
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Key modules:
+- src/lib/api/connectors.ts: onboarding/wizard calls (list connectors, initiate OAuth, create API key connections, validate)
+- src/lib/api/connections.ts: dashboard actions (list connections, validate, revoke)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Pages:
+- /wizard: multi-step creation flow (connector selection -> authentication -> validation)
+- /dashboard: fetches and displays connections with status; supports validate/revoke
+- /connections/[id]: explore containers, items, comments, and raw payloads
 
-## Deploy on Vercel
+## Troubleshooting
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- If pages show network errors:
+  - Verify NEXT_PUBLIC_API_BASE_URL is correct and reachable from the browser
+  - Confirm backend CORS allows requests from your frontend origin
+  - Check browser console for blocked/mixed-content issues (HTTPS/HTTP mismatch)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- If the Wizard does not list any connectors:
+  - Backend /connectors should return a JSON payload (UnifiedEnvelope or array). See src/lib/api/client.ts for normalization logic.
+
+- If static export is used:
+  - Ensure NEXT_PUBLIC_API_BASE_URL points to a publicly reachable backend URL at runtime.
+
+## License
+
+Internal project documentation for Unified Connector Framework.

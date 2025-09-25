@@ -8,8 +8,8 @@ import {
   createApiKeyConnection,
   validateConnection,
   type Connector,
-  type UnifiedEnvelope,
 } from "../../lib/api/connectors";
+import { type UnifiedEnvelope } from "../../lib/api/client";
 
 /**
  * PUBLIC_INTERFACE

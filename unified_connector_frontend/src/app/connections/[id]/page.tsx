@@ -225,7 +225,7 @@ function ContainersList({
                     {c.type || "container"} {c.key ? `• ${c.key}` : ""}
                   </p>
                 </div>
-                {c.raw && (
+                {typeof c.raw !== 'undefined' && (
                   <span className="rounded bg-gray-50 px-2 py-1 text-xs text-gray-600 ring-1 ring-gray-200">
                     raw
                   </span>
@@ -488,11 +488,11 @@ function ItemDetail({
               {item.status || "open"}{" "}
               {item.updatedAt ? `• updated ${new Date(item.updatedAt).toLocaleString()}` : ""}
             </p>
-            {item.raw && (
+            {typeof item.raw !== 'undefined' && (
               <details className="mt-2">
                 <summary className="cursor-pointer text-sm text-gray-700">Show raw</summary>
                 <pre className="mt-2 overflow-auto rounded bg-gray-50 p-3 text-xs ring-1 ring-gray-200">
-                  {JSON.stringify(item.raw, null, 2)}
+                  {JSON.stringify(item.raw as unknown, null, 2)}
                 </pre>
               </details>
             )}
@@ -571,6 +571,10 @@ function RawJson({
 /**
  * Page
  */
+// Note: This is a client component page. For static export builds, declare that this dynamic route
+// does not have arbitrary dynamic params to pre-render (handled at runtime in a hosting environment).
+export const dynamicParams = false;
+
 // PUBLIC_INTERFACE
 export default function ConnectionDetailPage() {
   /**

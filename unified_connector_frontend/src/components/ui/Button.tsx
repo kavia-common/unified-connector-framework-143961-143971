@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { oceanTheme, cx } from './theme';
+import { theme, cx } from './theme';
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -15,13 +15,9 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   rightIcon?: React.ReactNode;
 }
 
-/** PUBLIC_INTERFACE
- * Button
- * A reusable, accessible button component styled with the Ocean Professional theme.
- * - Supports variants: primary, secondary, ghost, danger
- * - Sizes: sm, md, lg
- * - Loading and disabled states
- * - Optional left/right icons
+/**
+ * PUBLIC_INTERFACE
+ * Premium button with Ocean Professional styling and smooth transitions.
  */
 export const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
@@ -36,33 +32,51 @@ export const Button: React.FC<ButtonProps> = ({
   ...rest
 }) => {
   const base =
-    'inline-flex items-center justify-center font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2';
+    'inline-flex items-center justify-center font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2';
   const sizes: Record<ButtonSize, string> = {
-    sm: 'text-sm px-3 py-1.5 rounded-md',
+    sm: 'text-xs px-3 py-1.5 rounded-md',
     md: 'text-sm px-4 py-2 rounded-lg',
-    lg: 'text-base px-5 py-2.5 rounded-lg',
+    lg: 'text-sm px-5 py-2.5 rounded-lg',
   };
   const variants: Record<ButtonVariant, string> = {
-    primary: `text-white bg-[${oceanTheme.colors.primary}] hover:bg-[${oceanTheme.colors.primaryHover}] shadow ${oceanTheme.shadow.sm}`,
-    secondary: `text-${'gray-900'} bg-[${oceanTheme.colors.secondary}] hover:bg-[${oceanTheme.colors.secondaryHover}]`,
-    ghost: 'text-gray-700 bg-transparent hover:bg-gray-50 border border-gray-200',
-    danger: `text-white bg-[${oceanTheme.colors.error}] hover:bg-red-600`,
+    primary: `text-white shadow ${className || ''}`,
+    secondary: `text-white shadow ${className || ''}`,
+    ghost: `text-gray-700 bg-transparent hover:bg-gray-100 focus-visible:ring-gray-300 ${className || ''}`,
+    danger: `text-white bg-red-500 hover:bg-red-600 focus-visible:ring-red-300 ${className || ''}`,
+    outline: `text-[${theme.colors.primary}] border border-[${theme.colors.border}] bg-white hover:bg-blue-50/50 focus-visible:ring-blue-300 ${className || ''}`,
   };
 
-  const disabledStyles =
-    'disabled:opacity-60 disabled:cursor-not-allowed disabled:saturate-75';
+  const styleByVariant: React.CSSProperties =
+    variant === 'primary'
+      ? { backgroundColor: theme.colors.primary }
+      : variant === 'secondary'
+      ? { backgroundColor: theme.colors.secondary }
+      : {};
 
+  const hoverStyle: React.CSSProperties =
+    variant === 'primary'
+      ? { transition: theme.transition.base }
+      : variant === 'secondary'
+      ? { transition: theme.transition.base }
+      : {};
+
+  const disabledStyles = 'disabled:opacity-60 disabled:cursor-not-allowed disabled:saturate-75';
   const width = fullWidth ? 'w-full' : '';
 
   return (
     <button
-      className={cx(base, sizes[size], variants[variant], disabledStyles, width, className)}
+      className={cx(base, sizes[size], variants[variant], disabledStyles, width)}
+      style={{
+        ...styleByVariant,
+        borderRadius: theme.radius.lg,
+        ...hoverStyle,
+      }}
       aria-disabled={disabled || loading}
-      {...rest}
       disabled={disabled || loading}
+      {...rest}
     >
       {(loading || leftIcon) && (
-        <span className={cx('mr-2 inline-flex')}>
+        <span className="mr-2 inline-flex">
           {loading ? (
             <svg
               className="animate-spin h-4 w-4 text-white"

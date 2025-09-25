@@ -577,17 +577,7 @@ function RawJson({
  * The connections detail page depends on runtime backend data and cannot be pre-rendered statically.
  * We explicitly error during export to signal this constraint while keeping dev/start environments functional.
  */
-export const dynamicParams = false;
-export const dynamic = "error";
 
-// PUBLIC_INTERFACE
-export async function generateStaticParams(): Promise<Array<{ id: string }>> {
-  /**
-   * This route cannot be statically exported because connection IDs are not known at build time.
-   * If static export is required, implement a backend-driven list of IDs here or switch the app to dynamic output.
-   */
-  throw new Error("Cannot statically export /connections/[id] without known IDs at build time.");
-}
 
 // PUBLIC_INTERFACE
 export default function ConnectionDetailPage() {

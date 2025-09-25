@@ -1,5 +1,7 @@
+'use client';
+
 import React from 'react';
-import { oceanTheme, cx } from './theme';
+import { theme, cx } from './theme';
 import Spinner from './Spinner';
 
 export interface CardProps {
@@ -13,7 +15,8 @@ export interface CardProps {
   className?: string;
 }
 
-/** PUBLIC_INTERFACE
+/**
+ * PUBLIC_INTERFACE
  * Card
  * A surface container with rounded corners, subtle shadows and optional gradient header.
  */
@@ -31,20 +34,25 @@ export const Card: React.FC<CardProps> = ({
     <section
       className={cx('w-full overflow-hidden', className)}
       style={{
-        background: oceanTheme.colors.surface,
-        borderRadius: oceanTheme.radius.lg,
-        boxShadow: oceanTheme.shadow.md,
-        border: `1px solid ${oceanTheme.colors.border}`,
+        background: theme.colors.surface,
+        borderRadius: theme.radius.lg,
+        boxShadow: theme.shadow.md,
+        border: `1px solid ${theme.colors.border}`,
+        transition: theme.transition.slow,
       }}
     >
       {(title || actions) && (
         <div
           className={cx('px-5 py-4 flex items-start md:items-center justify-between gap-3', gradient && 'bg-gradient-to-br')}
-          style={gradient ? { backgroundImage: 'linear-gradient(to bottom right, rgba(59,130,246,0.08), #ffffff)' } : {}}
+          style={
+            gradient
+              ? { backgroundImage: `linear-gradient(to bottom right, ${theme.colors.gradientFrom}, ${theme.colors.surface})` }
+              : {}
+          }
         >
           <div>
-            {title && <h3 className="text-base font-semibold" style={{ color: oceanTheme.colors.text }}>{title}</h3>}
-            {subtitle && <p className="text-sm mt-0.5" style={{ color: oceanTheme.colors.subtleText }}>{subtitle}</p>}
+            {title && <h3 className="text-base font-semibold" style={{ color: theme.colors.text }}>{title}</h3>}
+            {subtitle && <p className="text-sm mt-0.5" style={{ color: theme.colors.textMuted }}>{subtitle}</p>}
           </div>
           {actions && <div className="shrink-0">{actions}</div>}
         </div>
@@ -58,7 +66,7 @@ export const Card: React.FC<CardProps> = ({
           children
         )}
       </div>
-      {footer && <div className="px-5 py-3 border-t" style={{ borderColor: oceanTheme.colors.border }}>{footer}</div>}
+      {footer && <div className="px-5 py-3 border-t" style={{ borderColor: theme.colors.border }}>{footer}</div>}
     </section>
   );
 };

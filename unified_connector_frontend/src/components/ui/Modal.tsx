@@ -1,118 +1,59 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
-import { oceanTheme, cx } from './theme';
-import Button from './Button';
+import React, { useEffect } from 'react';
+import { theme, cx } from './theme';
 
-export interface ModalProps {
+type ModalSize = 'sm' | 'md' | 'lg';
+
+export type ModalProps = {
   open: boolean;
   onClose: () => void;
   title?: string;
   description?: string;
-  children?: React.ReactNode;
-  size?: 'sm' | 'md' | 'lg';
-  showClose?: boolean;
   footer?: React.ReactNode;
-}
+  size?: ModalSize;
+  children?: React.ReactNode;
+};
 
-/** PUBLIC_INTERFACE
- * Modal
- * Accessible modal dialog with overlay, keyboard/ESC close, and focus management.
+/**
+ * PUBLIC_INTERFACE
+ * Modal with overlay, ESC close, and footer slot using Ocean Professional theme.
  */
-export const Modal: React.FC<ModalProps> = ({
-  open,
-  onClose,
-  title,
-  description,
-  children,
-  size = 'md',
-  showClose = true,
-  footer,
-}) => {
-  const dialogRef = useRef<HTMLDivElement>(null);
-
-  // Close on ESC
+export const Modal: React.FC<ModalProps> = ({ open, onClose, title, description, footer, size = 'md', children }) => {
   useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        onClose();
-      }
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
     };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
+    if (open) window.addEventListener('keydown', onEsc);
+    return () => window.removeEventListener('keydown', onEsc);
   }, [open, onClose]);
-
-  // Basic focus trap: focus container on open
-  useEffect(() => {
-    if (open && dialogRef.current) {
-      dialogRef.current.focus();
-    }
-  }, [open]);
 
   if (!open) return null;
 
-  const sizeClass =
-    size === 'sm' ? 'max-w-md' : size === 'lg' ? 'max-w-3xl' : 'max-w-xl';
+  const width = size === 'sm' ? 'max-w-md' : size === 'lg' ? 'max-w-3xl' : 'max-w-xl';
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center"
-      aria-modal="true"
-      role="dialog"
-      aria-labelledby={title ? 'modal-title' : undefined}
-      aria-describedby={description ? 'modal-desc' : undefined}
-    >
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
       <div
-        className="absolute inset-0 bg-black/30"
-        onClick={onClose}
-        aria-hidden="true"
-      />
-      <div
-        ref={dialogRef}
-        tabIndex={-1}
-        className={cx(
-          'relative w-full mx-4',
-          sizeClass,
-          'bg-white rounded-xl shadow-2xl outline-none'
-        )}
-        style={{ boxShadow: oceanTheme.shadow.lg }}
+        className={cx('relative w-full', width, 'rounded-xl bg-white shadow-lg border')}
+        style={{ borderColor: theme.colors.border }}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={title ? 'modal-title' : undefined}
       >
-        {(title || showClose) && (
-          <div className="px-5 py-4 border-b flex items-center justify-between" style={{ borderColor: oceanTheme.colors.border }}>
-            {title && (
-              <h2 id="modal-title" className="text-lg font-semibold" style={{ color: oceanTheme.colors.text }}>
-                {title}
-              </h2>
-            )}
-            {showClose && (
-              <button
-                onClick={onClose}
-                className="p-2 rounded-md hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
-                aria-label="Close modal"
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-                  <path fill="#6B7280" d="M18.3 5.71L12 12.01l-6.29-6.3L4.3 7.12 10.6 13.4l-6.3 6.29 1.42 1.42L12 14.83l6.29 6.29 1.42-1.41-6.3-6.29 6.3-6.29z"/>
-                </svg>
-              </button>
-            )}
-          </div>
-        )}
-        {description && (
-          <div id="modal-desc" className="px-5 pt-3 text-sm text-gray-600">
-            {description}
+        {(title || description) && (
+          <div className="px-5 py-4 border-b" style={{ borderColor: theme.colors.border }}>
+            {title && <h3 id="modal-title" className="text-base font-semibold text-gray-900">{title}</h3>}
+            {description && <p className="text-sm text-gray-600 mt-1">{description}</p>}
           </div>
         )}
         <div className="px-5 py-4">{children}</div>
-        <div className="px-5 py-3 border-t bg-gray-50/60 rounded-b-xl" style={{ borderColor: oceanTheme.colors.border }}>
-          {footer ?? (
-            <div className="flex items-center justify-end gap-2">
-              <Button variant="ghost" onClick={onClose}>Cancel</Button>
-              <Button variant="primary" onClick={onClose}>OK</Button>
-            </div>
-          )}
-        </div>
+        {footer && (
+          <div className="px-5 py-3 border-t bg-gray-50" style={{ borderColor: theme.colors.border }}>
+            {footer}
+          </div>
+        )}
       </div>
     </div>
   );

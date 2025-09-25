@@ -8,3 +8,6 @@ export { Modal } from './Modal';
 export type { ModalProps } from './Modal';
 export { ErrorBanner } from './ErrorBanner';
 export type { ErrorBannerProps } from './ErrorBanner';
+export { default as Badge } from './Badge';
+export { default as Stat } from './Stat';
+export { default as SectionHeader } from './SectionHeader';

@@ -1,30 +1,56 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Ocean Professional theme tokens */
 :root {
-  --ocean-primary: #2563eb;   /* blue-600 */
-  --ocean-secondary: #f59e0b; /* amber-500 */
-  --ocean-success: #10b981;   /* emerald-500 */
-  --ocean-error: #ef4444;     /* red-500 */
-  --ocean-text: #111827;      /* gray-900 */
-  --ocean-surface: #ffffff;   /* white */
-  --ocean-bg: #f9fafb;        /* gray-50 */
-}
-
-/* Base resets */
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+  --background: #f9fafb;
+  --foreground: #111827;
 }
 
 html, body {
+  height: 100%;
   max-width: 100vw;
   overflow-x: hidden;
 }
 
 body {
-  color: var(--ocean-text);
-  background: var(--ocean-bg);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(59,130,246,0.06), transparent 60%),
+    radial-gradient(1000px 500px at 110% 10%, rgba(245,158,11,0.05), transparent 60%),
+    var(--background);
+  color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer base {
+  h1, h2, h3, h4 {
+    color: #111827; /* gray-900 */
+  }
+  p {
+    color: #374151; /* gray-700 */
+  }
+}
+
+@layer components {
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem; /* 4 */
+  }
+  @media (min-width: 640px) { /* sm */
+    .card-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1280px) { /* xl */
+    .card-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .soft-divider {
+    height: 1px;
+    background-color: #f3f4f6; /* gray-100 */
+  }
 }

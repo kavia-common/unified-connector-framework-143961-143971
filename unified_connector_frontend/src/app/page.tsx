@@ -1,106 +1,40 @@
 'use client';
 
-import React from 'react';
-import Button from '../components/ui/Button';
-import ErrorBanner from '../components/ui/ErrorBanner';
-import Spinner from '../components/ui/Spinner';
-import Card from '../components/ui/Card';
-import Modal from '../components/ui/Modal';
+import Link from 'next/link';
+import { Button, Card, Stat, SectionHeader } from '../components/ui';
 
-export default function Home() {
-  const [open, setOpen] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
-
-  const simulateAction = async () => {
-    setError(null);
-    setLoading(true);
-    await new Promise((r) => setTimeout(r, 1000));
-    if (Math.random() < 0.5) {
-      setError('Failed to complete the simulated action. Please try again.');
-    }
-    setLoading(false);
-  };
-
+export default function HomePage() {
   return (
-    <main className="p-6 space-y-6">
-      <div className="space-y-2">
-        <h1 className="text-2xl font-semibold">Unified Connector Framework</h1>
-        <p className="text-gray-600">
-          Build, connect, and manage integrations via a unified envelope.
-        </p>
+    <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8">
+      <SectionHeader
+        title="Unified Connector"
+        subtitle="Connect, manage, and monitor integrations through a single, elegant interface."
+        meta="Ocean Professional"
+        cta={
+          <div className="flex gap-3">
+            <Link href="/wizard"><Button variant="primary">Create connection</Button></Link>
+            <Link href="/dashboard"><Button variant="outline">View dashboard</Button></Link>
+          </div>
+        }
+      />
+
+      <div className="card-grid">
+        <Stat label="Active connections" value="12" delta="+2 this week" />
+        <Stat label="Available connectors" value="18" />
+        <Stat label="Tasks processed" value="4,281" delta="+8%" />
       </div>
 
-      {error && (
-        <ErrorBanner
-          message={error}
-          onRetry={() => {
-            setError(null);
-            simulateAction();
-          }}
-          onDismiss={() => setError(null)}
-        />
-      )}
-
       <Card
-        title="Ocean Components Demo"
-        subtitle="Reusable UI components with Ocean Professional theme."
-        actions={
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" onClick={() => setOpen(true)}>
-              Open Modal
-            </Button>
-            <Button variant="primary" loading={loading} onClick={simulateAction}>
-              {loading ? 'Working...' : 'Simulate Action'}
-            </Button>
-          </div>
-        }
-        footer={
-          <div className="text-sm text-gray-600">
-            Tip: Click &quot;Open Modal&quot; to see the modal component. Use &quot;Simulate Action&quot; to test loading and errors.
-          </div>
-        }
+        title="Get started"
+        subtitle="Use the wizard to add a new connection and authorize access."
+        actions={<Link href="/wizard"><Button variant="secondary">Open wizard</Button></Link>}
       >
-        <div className="flex flex-wrap items-center gap-3">
-          <Button variant="primary">Primary</Button>
-          <Button variant="secondary">Secondary</Button>
-          <Button variant="ghost">Ghost</Button>
-          <Button variant="danger">Danger</Button>
-          <Button variant="primary" size="sm">
-            Small
-          </Button>
-          <Button variant="primary" size="lg">
-            Large
-          </Button>
-        </div>
-
-        <div className="mt-6 flex items-center gap-6">
-          <Spinner label="Fetching connectors..." />
-          <Spinner color="secondary" size="lg" label="Syncing resources..." />
-          <Spinner color="neutral" size="sm" label="Preparing..." />
-        </div>
+        <ul className="list-disc pl-5 space-y-2 text-sm text-gray-700">
+          <li>Choose a connector and follow the guided steps.</li>
+          <li>Review connection details and grant permissions.</li>
+          <li>Start syncing and monitor status on the dashboard.</li>
+        </ul>
       </Card>
-
-      <Modal
-        open={open}
-        onClose={() => setOpen(false)}
-        title="Ocean Modal"
-        description="A reusable modal component with keyboard support and Ocean styling."
-        footer={
-          <div className="flex items-center justify-end gap-2">
-            <Button variant="ghost" onClick={() => setOpen(false)}>
-              Close
-            </Button>
-            <Button variant="primary" onClick={() => setOpen(false)}>
-              Confirm
-            </Button>
-          </div>
-        }
-      >
-        <p className="text-gray-700">
-          This is a demo modal content area. Place forms or confirmation dialogs here.
-        </p>
-      </Modal>
     </main>
   );
 }

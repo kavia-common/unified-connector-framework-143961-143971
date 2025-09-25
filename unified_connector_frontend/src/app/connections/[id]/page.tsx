@@ -5,7 +5,11 @@ import useSWR, { mutate } from "swr";
 import Link from "next/link";
 import { notFound, useParams, useRouter, useSearchParams } from "next/navigation";
 
-
+/**
+ * Re-export generateStaticParams so Next.js static export can detect it on this route.
+ * Implementation lives in a sibling file to keep concerns separated.
+ */
+export { default as generateStaticParams } from "./generateStaticParams";
 
 /**
  * Utilities
@@ -577,9 +581,8 @@ function RawJson({
 /**
  * For static export builds (next.config.ts output: "export"), dynamic params must be known at build time.
  * The connections detail page depends on runtime backend data and cannot be pre-rendered statically.
- * We explicitly error during export to signal this constraint while keeping dev/start environments functional.
+ * We provide generateStaticParams = [] via re-export above to satisfy the exporter and rely on client-side rendering.
  */
-
 
 // PUBLIC_INTERFACE
 export default function ConnectionDetailPage() {
